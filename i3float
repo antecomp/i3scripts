@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+    echo "Usage: <true|false>"
+    echo "true: select window   false: use active window"
+    exit 1
+fi
+
+# True - use xdotool to select a window with mouse
+# False - use the currently focused window
+if [ "$1" = "true" ]; then
+  WID=$(xdotool selectwindow) 
+elif [ "$1" = "false" ]; then
+  WID=$(xdotool getactivewindow) 
+else
+    echo "Invalid parameter: $1. Please use 'true' or 'false'."
+    echo "true: select window   false: use active window"
+    exit 1
+fi
+
+
+IFS='x+' read -ra rect < <(slop -b 3 -l -c 0.3,0.4,0.6,0.4)
+i3-msg [id="$WID"] floating enable
+i3-msg [id="$WID"] resize set width "${rect[0]}px"
+i3-msg [id="$WID"] resize set height "${rect[1]}px"
+i3-msg [id="$WID"] move position "${rect[2]}px" "${rect[3]}px" 
